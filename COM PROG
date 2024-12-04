@@ -19,7 +19,6 @@ class Main {
                 " ~(_)                                       c(c)\n";
 
             while (gamestatus) {
-                // Print GUI only once before taking an action
                 String stats =
                     "\n" +
                     "=@=^=@=^=@=^=@=^=@=^=@=^=@=^=@=^=@=^=@=^=@=^=@=^=@=^=@=\n" +
@@ -37,11 +36,12 @@ class Main {
                     "-----------------------------------------------------\n" +
                     "[ATTACK]          [FOCUS]          [HEAL]          [RUN]\n" +
                     "Input your Desired move: ";
+                //prints gui
                 System.out.println(stats);
 
                 // Get user input
                 userinput = sc.nextLine().toUpperCase().trim();
-
+                //switch case for attacks, heal, focus, and run
                 switch (userinput) {
                     case "ATTACK":
                         turns++;
@@ -99,6 +99,8 @@ class Main {
                         validcommand = false;
                         break;
                 }
+                //responsible for enemy attacking
+                // testing palang yang array might remove later
                 if (validcommand) {
                     int enemyDamage = (int) (Math.random() * 10) + 1;  // Example damage value
                     String[] attackmsg = {
@@ -114,7 +116,8 @@ class Main {
                         "The enemy strikes swiftly! " + enemyDamage + " damage!"
                         };
                     String randommsg = attackmsg[(int)(Math.random()*attackmsg.length)];
-                    
+
+                //eto for enemy attacking based on turns
                  if (turns < 7) {
                         PlayerHp -= enemyDamage;
                         EnemyMp -=5;
@@ -140,6 +143,7 @@ class Main {
                         EnemyMp = 0;
                     }
                  }
+
                 // Check the game outcome conditions
                 if (PlayerHp <= 0 && EnemyHp <= 0) {
                     announce = "It's a draw!";
