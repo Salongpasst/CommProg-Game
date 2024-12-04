@@ -1,0 +1,195 @@
+import java.util.Scanner;
+
+class Main {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        boolean playAgain;
+
+        do {
+            String userinput;
+            int PlayerHp = 100, PlayerMp = 100;
+            int EnemyHp = 100, EnemyMp = 100; 
+            int turns = 0;
+            String announce = "";
+            boolean gamestatus = true;
+            boolean validcommand = true;
+            String PlayFaces =
+                " () ()                                         n,n\n" +
+                "=[o-o]=                                       (-n-)=\n" +
+                " ~(_)                                       c(c)\n";
+
+            while (gamestatus) {
+                // Print GUI only once before taking an action
+                String stats =
+                    "\n" +
+                    "=@=^=@=^=@=^=@=^=@=^=@=^=@=^=@=^=@=^=@=^=@=^=@=^=@=^=@=\n" +
+                    "     |              Pooku Palace!               |\n" +
+                    "=@=^=@=^=@=^=@=^=@=^=@=^=@=^=@=^=@=^=@=^=@=^=@=^=@=^=@=\n" +
+                    announce + "\n" +
+                    "Turns: " + turns + "\n" +
+                    "\n" +
+                    PlayFaces +
+                    "======================================================\n" +
+                    "Your Stats                             Enemy Stats\n" +
+                    "-----------------------------------------------------\n" +
+                    "Health: " + PlayerHp + "                            Health: " + EnemyHp + "\n" +
+                    "Mp:\t" + PlayerMp + "                                Mp: " + EnemyMp + "\n" +
+                    "-----------------------------------------------------\n" +
+                    "[ATTACK]          [FOCUS]          [HEAL]          [RUN]\n" +
+                    "Input your Desired move: ";
+                System.out.println(stats);
+
+                // Get user input
+                userinput = sc.nextLine().toUpperCase().trim();
+
+                switch (userinput) {
+                    case "ATTACK":
+                        turns++;
+                        announce = "You Attack the Enemy! And Deals 15 Damage";
+                        EnemyHp -= 15;
+                        PlayFaces =
+                            " () ()                                         n,n\n" +
+                            "=[-.o]=  o=||==>                              (>n<)=\n" +
+                            "~(_)                                       c(c)\n";
+                        break;
+
+                    case "HEAL":
+                        if (PlayerMp >= 15) { // Ensure enough MP
+                            turns++;
+                            announce = "You Heal yourself~~~";
+                            PlayerHp += 20;
+                            PlayerMp -= 15;
+                            PlayFaces =
+                                " () ()   +*                                    n,n\n" +
+                                "=[^o^]=    +*                                 (-n-)=\n" +
+                                "~(_)   +*                                  c(c)\n";
+                            PlayerHp = Math.min(PlayerHp, 100); // Cap HP at 100
+                        } else {
+                            announce = "You don't have enough mana to heal!";
+                        }
+                        break;
+
+                    case "FOCUS":
+                        turns++;
+                        announce = "You're in a Focus State, it increases your mana.";
+                        PlayerMp += 15;
+                        PlayFaces =
+                            " () ()   !!                               ??   n,n\n" +
+                            "=[#o#]=                                       (-n-)=\n" +
+                            "~(_)                                       c(c)\n";
+                        PlayerMp = Math.min(PlayerMp, 100); // Cap MP at 100
+                        break;
+
+                    case "RUN":
+                        announce = "You ran away safely!";
+                        PlayFaces =
+                            " () ()   exit!!                       (weak)   n,n\n" +
+                            "=[-o-]=   <==                                 (-u-)=\n" +
+                            "~(_)    <==                                  c(c)\n";
+                        gamestatus = false; // End game immediately
+                        validcommand = false;
+                        break;
+
+                    default:
+                        announce = "\nPooku was Confused.. (ENTER A VALID COMMAND!!)";
+                        PlayFaces =
+                            " () ()                                         n,n\n" +
+                            "=[?.?]=                                       (?n?)=\n" +
+                            "~(_)                                         c(c)\n";
+                        validcommand = false;
+                        break;
+                }
+                if (validcommand) {
+                    int enemyDamage = (int) (Math.random() * 10) + 1;  // Example damage value
+                    String[] attackmsg = {
+                        "The enemy strikes hard! You take " + enemyDamage + " damage!",
+                        "A fierce blow! You suffer " + enemyDamage + " damage!",
+                        "The enemy lands a heavy hit! " + enemyDamage + " damage!",
+                        "You take a brutal hit! " + enemyDamage + " damage!",
+                        "The enemy lashes out! You take " + enemyDamage + " damage!",
+                        "A vicious strike! You lose " + enemyDamage + " health!",
+                        "The enemy attacks! " + enemyDamage + " damage dealt!",
+                        "The enemy's strike hurts! " + enemyDamage + " damage!",
+                        "A powerful hit! You take " + enemyDamage + " damage!",
+                        "The enemy strikes swiftly! " + enemyDamage + " damage!"
+                        };
+                    String randommsg = attackmsg[(int)(Math.random()*attackmsg.length)];
+                    
+                 if (turns < 7) {
+                        PlayerHp -= enemyDamage;
+                        EnemyMp -=5;
+                        announce += randommsg;
+                        System.out.println("You receive " + enemyDamage + " damages");
+                    } else if (turns == 7) {
+                        System.out.println("The enemy is charging up an attack...");
+                        EnemyMp += 35;
+                    } else if (turns == 10) {
+                        PlayerHp -= 30;
+                        EnemyMp -= 20;
+                        System.out.println("The enemy went Berserk!");
+                    } else if (turns < 19) {
+                        PlayerHp -= enemyDamage;
+                        EnemyMp -= 5;
+                        System.out.println("The enemy bites Pooku!");
+                    } else if (turns == 19) {
+                        EnemyMp -=50;
+                        System.out.println("THE ENEMY PULLED OUT A GUN!?");
+                    } else if (turns == 20) {
+                        System.out.println("THE ENEMY SHOOTS POOKU IN THE HEAD!");
+                        PlayerHp = 0;
+                        EnemyMp = 0;
+                    }
+                 }
+                // Check the game outcome conditions
+                if (PlayerHp <= 0 && EnemyHp <= 0) {
+                    announce = "It's a draw!";
+                    PlayFaces =
+                        " () ()                                         n,n\n" +
+                        "=[X.X]=                                       (XnX)=\n" +
+                        "~(_)                                         c(c)\n";
+                    gamestatus = false;
+                } else if (PlayerHp <= 0) {
+                    announce = "You have been defeated!";
+                    PlayFaces =
+                        " () ()                                         n,n\n" +
+                        "=[X.X]=                                       (^n^)=\n" +
+                        "~(_)                                         c(c)\n";
+                    gamestatus = false;
+                } else if (EnemyHp <= 0) {
+                    announce = "You are victorious!";
+                    PlayFaces =
+                        " () ()                                         n,n\n" +
+                        "=[^.^]=                                       (^n^)=\n" +
+                        "~(_)                                         c(c)\n";
+                    gamestatus = false;
+                }
+            }
+
+            // After the game ends, print the final outcome
+            System.out.println(
+                "\n" +
+                "=@=^=@=^=@=^=@=^=@=^=@=^=@=^=@=^=@=^=@=^=@=^=@=^=@=^=@=\n" +
+                "     |              Pooku Palace!               |\n" +
+                "=@=^=@=^=@=^=@=^=@=^=@=^=@=^=@=^=@=^=@=^=@=^=@=^=@=^=@=\n" +
+                announce + "\n" +
+                "Turns: " + turns + "\n" +
+                "\n" +
+                PlayFaces +
+                "======================================================\n" +
+                "Your Stats                             Enemy Stats\n" +
+                "-----------------------------------------------------\n" +
+                "Health: " + PlayerHp + "                            Health: " + EnemyHp + "\n" +
+                "Mp:\t" + PlayerMp + "                                Mp: " + EnemyMp + "\n" +
+                "-----------------------------------------------------\n"
+            );
+
+            // Ask if the player wants to play again
+            System.out.print("\nWould you like to play again? (yes/no): ");
+            String response = sc.nextLine().trim().toLowerCase();
+            playAgain = response.equals("yes");
+        } while (playAgain);
+
+        System.out.println("Thanks for playing! Goodbye!");
+        sc.close();
+    }
+}
