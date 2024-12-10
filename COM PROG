@@ -14,9 +14,9 @@ class Main {
             boolean gamestatus = true;
             boolean validcommand = true;
             String PlayFaces =
-                " () ()                                         n,n\n" +
-                "=[o-o]=                                       (-n-)=\n" +
-                " ~(_)                                         c(c)\n";
+                "  () ()                                         n,n\n" +
+                " =[o-o]=                                       (-n-)=\n" +
+                " ~(___)                                       c(  c)\n";
 
             while (gamestatus) {
                 // Print GUI only once before taking an action
@@ -44,25 +44,26 @@ class Main {
 
                 switch (userinput) {
                     case "ATTACK":
+                        int playerDamage = (int) (Math.random()*20) + 1;;
                         turns++;
-                        announce = "You Attack the Enemy! And Deals 15 Damage";
-                        EnemyHp -= 15;
+                        announce = "You Attack the Enemy! And Deals "+playerDamage+" Damage";
+                        EnemyHp -= playerDamage;
                         PlayFaces =
                             " () ()                                         n,n\n" +
                             "=[-.o]=  o=||==>                              (>n<)=\n" +
-                            "~(_)                                          c(c)\n";
+                            "~(___)                                       c(  c)\n";
                         break;
 
                     case "HEAL":
                         if (PlayerMp >= 15) { // Ensure enough MP
                             turns++;
-                            announce = "You Heal yourself~~~";
+                            announce = "You Heal yourself~~~ +20 HP, -15 MP";
                             PlayerHp += 20;
                             PlayerMp -= 15;
                             PlayFaces =
                                 " () ()   +*                                    n,n\n" +
                                 "=[^o^]=    +*                                 (-n-)=\n" +
-                                "~(_)   +*                                  c(c)\n";
+                                "~(___)   +*                                  c(  c)\n";
                             PlayerHp = Math.min(PlayerHp, 100); // Cap HP at 100
                         } else {
                             announce = "You don't have enough mana to heal!";
@@ -71,12 +72,12 @@ class Main {
 
                     case "FOCUS":
                         turns++;
-                        announce = "You're in a Focus State, it increases your mana.";
+                        announce = "You're in a Focus State, it increases your mana. + 15 MP";
                         PlayerMp += 15;
                         PlayFaces =
                             " () ()   !!                               ??   n,n\n" +
                             "=[#o#]=                                       (-n-)=\n" +
-                            "~(_)                                          c(c)\n";
+                            "~(___)                                       c(  c)\n";
                         PlayerMp = Math.min(PlayerMp, 100); // Cap MP at 100
                         break;
 
@@ -85,9 +86,9 @@ class Main {
                         PlayFaces =
                             " () ()   exit!!                       (weak)   n,n\n" +
                             "=[-o-]=   <==                                 (-u-)=\n" +
-                            "~(_)    <==                                   c(c)\n";
+                            "~(___)    <==                                c(  c)\n";
                         gamestatus = false; // End game immediately
-                        validcommand = false;
+                        validcommand = false; //make the attacks to false
                         break;
 
                     default:
@@ -95,56 +96,75 @@ class Main {
                         PlayFaces =
                             " () ()                                         n,n\n" +
                             "=[?.?]=                                       (?n?)=\n" +
-                            "~(_)                                          c(c)\n";
+                            "~(___)                                       c(  c)\n";
                         validcommand = false;
                         break;
                 }
                 if (validcommand) {
-                    int enemyDamage = 10;
-                 if (turns < 7) { 
-                     PlayerHp -= enemyDamage;
-                     EnemyMp -= 10;
-                    } else if (turns == 7) {
-                        System.out.println("The enemy is charging up an attack...");
-                        EnemyMp += 35;
-                    } else if (turns == 10) {
-                        PlayerHp -= 30;
-                        EnemyMp -= 20;
-                        System.out.println("The enemy went Berserk!");
-                    } else if (turns < 19) {
-                        PlayerHp -= enemyDamage;
-                        EnemyMp -= 5;
-                        System.out.println("The enemy bites Pooku!");
-                    } else if (turns == 19) {
-                        EnemyMp -=50;
-                        System.out.println("THE ENEMY PULLED OUT A GUN!?");
-                    } else if (turns == 20) {
-                        System.out.println("THE ENEMY SHOOTS POOKU IN THE HEAD!");
-                        PlayerHp = 0;
-                        EnemyMp = 0;
-                    }
-                 }
+                    int enemyDamage;
+
+                if (turns <= 5) { 
+                    // Early game: Light attacks
+                    enemyDamage = 10;
+                    PlayerHp -= enemyDamage;
+                    EnemyMp -= 5;
+                    announce += "\nThe enemy attacks lightly and deals " + enemyDamage + " damage!";
+                } else if (turns == 6) {
+                    // Strategic buildup
+                    EnemyMp += 20;
+                    announce += "\nThe enemy prepares for something...";
+                } else if (turns <= 10) {
+                    // Mid-game: Moderate attacks
+                    enemyDamage = 15;
+                    PlayerHp -= enemyDamage;
+                    EnemyMp -= 10;
+                    announce += "\nThe enemy strikes harder and deals " + enemyDamage + " damage!";
+                } else if (turns == 12) {
+                    // Special action
+                    EnemyMp -= 20;
+                    announce += "\nThe enemy enters Berserk mode!";
+                } else if (turns <= 15) {
+                    // Berserk attacks
+                    enemyDamage = 30;
+                    PlayerHp -= enemyDamage;
+                    announce += "\nThe enemy attacks furiously and deals " + enemyDamage + " damage!";
+                } else if (turns == 18) {
+                    // Pre-final event
+                    EnemyMp -= 50;
+                    announce = "THE ENEMY PULLED OUT A GUN!?";
+                } else if (turns == 20) {
+                    // Climax event
+                    PlayerHp = 0; 
+                    EnemyMp = 0;
+                    announce += "\nTHE ENEMY SHOOTS POOKU IN THE HEAD! Critical hit and deals " + PlayerHp + " damage!";
+                } else {
+  
+                    enemyDamage = 10; 
+                    PlayerHp -= enemyDamage;
+                    announce = "\nThe enemy fights cautiously.";
+                }
+            }
                 // Check the game outcome conditions
                 if (PlayerHp <= 0 && EnemyHp <= 0) {
                     announce = "It's a draw!";
                     PlayFaces =
                         " () ()                                         n,n\n" +
                         "=[X.X]=                                       (XnX)=\n" +
-                        "~(_)                                          c(c)\n";
+                        "~(___)                                       c(  c)\n";
                     gamestatus = false;
                 } else if (PlayerHp <= 0) {
                     announce = "You have been defeated!";
                     PlayFaces =
                         " () ()                                         n,n\n" +
                         "=[X.X]=                                       (^n^)=\n" +
-                        "~(_)                                          c(c)\n";
+                        "~(___)                                       c(  c)\n";
                     gamestatus = false;
                 } else if (EnemyHp <= 0) {
                     announce = "You are victorious!";
                     PlayFaces =
                         " () ()                                         n,n\n" +
                         "=[^.^]=                                       (XnX)=\n" +
-                        "~(_)                                          c(c)\n";
+                        "~(___)                                       c(  c)\n";
                     gamestatus = false;
                 }
             }
@@ -155,16 +175,17 @@ class Main {
                 "=@=^=@=^=@=^=@=^=@=^=@=^=@=^=@=^=@=^=@=^=@=^=@=^=@=^=@=\n" +
                 "     |              Pooku Palace!               |\n" +
                 "=@=^=@=^=@=^=@=^=@=^=@=^=@=^=@=^=@=^=@=^=@=^=@=^=@=^=@=\n" +
-                announce + "\n" +
-                "Turns: " + turns + "\n" +
                 "\n" +
+                "Turns: " + turns + "\n" +
+                "          ~+={o|``" + announce + "``|o}=+~                  "+
+		    "\n" +
                 PlayFaces +
                 "======================================================\n" +
                 "Your Stats                             Enemy Stats\n" +
                 "-----------------------------------------------------\n" +
                 "Health: " + PlayerHp + "                            Health: " + EnemyHp + "\n" +
                 "Mp:\t" + PlayerMp + "                                Mp: " + EnemyMp + "\n" +
-                "-----------------------------------------------------\n"
+                "-----------------------------------------------------\n" 
             );
 
             // Ask if the player wants to play again
@@ -177,6 +198,5 @@ class Main {
         sc.close();
     }
 }
-
 
 
